@@ -3,6 +3,7 @@ from pydantic import BaseModel
 import google.genai as genai
 import os
 from dotenv import load_dotenv
+from fastapi import Query
 
 load_dotenv()  # Load environment variables from a .env file if present
 
@@ -28,3 +29,11 @@ def generate_text(request: PromptRequest):
 @app.get("/")
 def root():
     return {"message": "MCP Gemini Model Server is running."}
+
+@app.get("/list-files")
+def list_files(folder: str = Query(".")):
+    try:
+        files = os.listdir(folder)
+        return {"files": files}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
